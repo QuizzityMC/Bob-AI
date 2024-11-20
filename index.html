@@ -1,63 +1,140 @@
-  
-  <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
-    <h1>Chat with Bob</h1>
-    <div id="chatHistoryCtn" style="height: 300px; border: 1px solid #ccc; overflow-y: auto; padding: 10px; margin-bottom: 10px;"></div>
-    <input id="userInput" type="text" placeholder="Type your message..." style="width: 80%; padding: 5px;">
-    <button id="sendBtn" onclick="sendMessage()" style="width: 18%; padding: 5px;">Send</button>
-  </div>
-  
-  <script>
-    let chatHistory = [];
-  
-    async function sendMessage() {
-      if (!userInput.value.trim()) return;
-  
-      // Add user message to chat
-      addMessageToChat('You', userInput.value);
-  
-      // Disable input and button, show loading
-      userInput.disabled = true;
-      sendBtn.disabled = true;
-      sendBtn.textContent = "⏳ Thinking...";
-  
-      // Generate Bob's response
-      let bobResponse = await generateBobResponse(userInput.value);
-  
-      // Add Bob's response to chat
-      addMessageToChat('Bob', bobResponse);
-  
-      // Re-enable input and button
-      userInput.value = '';
-      userInput.disabled = false;
-      sendBtn.disabled = false;
-      sendBtn.textContent = "Send";
-    }
-  
-    function addMessageToChat(sender, message) {
-      chatHistory.push({sender, message});
-      updateChatDisplay();
-    }
-  
-    function updateChatDisplay() {
-      chatHistoryCtn.innerHTML = chatHistory.map(msg => 
-        `<p><strong>${msg.sender}:</strong> ${msg.message}</p>`
-      ).join('');
-      chatHistoryCtn.scrollTop = chatHistoryCtn.scrollHeight;
-    }
-  
-    // Allow sending message with Enter key
-    userInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') sendMessage();
-    });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Bob</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        #chatbox {
+            max-width: 600px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        #chatHistoryCtn {
+            height: 300px;
+            border: 1px solid #ccc;
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background: #ffffff;
+        }
+        #userInput {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+        #sendBtn {
+            width: 18%;
+            padding: 10px;
+            border: none;
+            background: #0078d4;
+            color: #ffffff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #sendBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #sendBtn:hover:not(:disabled) {
+            background: #005bb5;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbox">
+        <h1>Chat with Bob</h1>
+        <div id="chatHistoryCtn"></div>
+        <input id="userInput" type="text" placeholder="Type your message...">
+        <button id="sendBtn" onclick="sendMessage()">Send</button>
+    </div>
 
-    // AI model for generating Bob's responses
-    async function generateBobResponse(userMessage) {
-      const prompt = `You are Bob, a friendly and helpful AI assistant. Respond to the following message from the user:
-      
+    <script>
+        let chatHistory = [];
+
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const chatHistoryCtn = document.getElementById('chatHistoryCtn');
+            
+            if (!userInput.value.trim()) return;
+
+            // Add user message to chat
+            addMessageToChat('You', userInput.value);
+
+            // Disable input and button, show loading
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.textContent = "⏳ Thinking...";
+
+            // Generate Bob's response
+            let bobResponse = await generateBobResponse(userInput.value);
+
+            // Add Bob's response to chat
+            addMessageToChat('Bob', bobResponse);
+
+            // Re-enable input and button
+            userInput.value = '';
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            sendBtn.textContent = "Send";
+        }
+
+        function addMessageToChat(sender, message) {
+            const chatHistoryCtn = document.getElementById('chatHistoryCtn');
+            chatHistory.push({sender, message});
+            updateChatDisplay();
+        }
+
+        function updateChatDisplay() {
+            const chatHistoryCtn = document.getElementById('chatHistoryCtn');
+            chatHistoryCtn.innerHTML = chatHistory.map(msg => 
+                `<p><strong>${msg.sender}:</strong> ${msg.message}</p>`
+            ).join('');
+            chatHistoryCtn.scrollTop = chatHistoryCtn.scrollHeight;
+        }
+
+        // Allow sending message with Enter key
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // AI model for generating Bob's responses
+        async function generateBobResponse(userMessage) {
+            const prompt = `You are Bob, a friendly and helpful AI assistant. Respond to the following message from the user:
+            
 User: ${userMessage}
 
 Bob:`;
-      
-      return await generateText(prompt);
-    }
-  </script>
+            return await generateText(prompt);
+        }
+
+        async function generateText(prompt) {
+            // Simulating a response generation (for example purposes)
+            const responses = {
+                "hello": "Hi there! How can I assist you today?",
+                "how are you": "I'm just a bunch of code, but thanks for asking!",
+                "what's your name": "I am your friendly AI assistant, Bob!",
+                // Add more responses as needed
+            };
+            return responses[prompt.toLowerCase()] || "I'm here to chat! Ask me anything!";
+        }
+    </script>
+</body>
+</html>
