@@ -121,8 +121,8 @@
         // AI model for generating Bob's responses using Hugging Face API
         async function generateBobResponse(userMessage) {
             const apiKey = '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';
-            const model = 'gpt2';
-            const prompt = `User: ${userMessage}\nBob:`;
+            const model = 'gpt-2';
+            const prompt = `The following is a conversation with an AI assistant named Bob. Bob is friendly, helpful, and provides sensible responses.\n\nUser: ${userMessage}\nBob:`;
 
             try {
                 const response = await axios.post(`https://api-inference.huggingface.co/models/${model}`, {
