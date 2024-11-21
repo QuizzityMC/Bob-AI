@@ -121,7 +121,7 @@
         // AI model for generating Bob's responses using Hugging Face API
         async function generateBobResponse(userMessage) {
             const apiKey = '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';
-            const model = 'rwkv';
+            const model = 'gpt2';
             const prompt = `User: ${userMessage}\nBob:`;
 
             try {
@@ -133,8 +133,8 @@
 
                 console.log('API Response:', response);
 
-                if (response.data && response.data.generated_text) {
-                    return response.data.generated_text.split('Bob:')[1].trim();
+                if (response.data && response.data[0] && response.data[0].generated_text) {
+                    return response.data[0].generated_text.split('Bob:')[1].trim();
                 } else {
                     console.error('Unexpected response format:', response.data);
                     throw new Error('Unexpected response format from AI.');
