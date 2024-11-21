@@ -131,6 +131,8 @@
                     headers: { 'Authorization': `Bearer ${apiKey}` }
                 });
 
+                console.log('API Response:', response.data);
+
                 if (response.data && response.data.generated_text) {
                     return response.data.generated_text.split('Bob:')[1].trim();
                 } else {
