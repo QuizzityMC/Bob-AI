@@ -65,6 +65,7 @@
         <button id="sendBtn" onclick="sendMessage()">Send</button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         let chatHistory = [];
 
@@ -72,7 +73,7 @@
             const userInput = document.getElementById('userInput');
             const sendBtn = document.getElementById('sendBtn');
             const chatHistoryCtn = document.getElementById('chatHistoryCtn');
-            
+
             if (!userInput.value.trim()) return;
 
             // Add user message to chat
@@ -97,7 +98,6 @@
         }
 
         function addMessageToChat(sender, message) {
-            const chatHistoryCtn = document.getElementById('chatHistoryCtn');
             chatHistory.push({sender, message});
             updateChatDisplay();
         }
@@ -115,25 +115,17 @@
             if (e.key === 'Enter') sendMessage();
         });
 
-        // AI model for generating Bob's responses
+        // AI model for generating Bob's responses using Hugging Face API
         async function generateBobResponse(userMessage) {
-            const prompt = `You are Bob, a friendly and helpful AI assistant. Respond to the following message from the user:
-            
-User: ${userMessage}
-
-Bob:`;
-            return await generateText(prompt);
-        }
-
-        async function generateText(prompt) {
-            // Simulating a response generation (for example purposes)
-            const responses = {
-                "hello": "Hi there! How can I assist you today?",
-                "how are you": "I'm just a bunch of code, but thanks for asking!",
-                "what's your name": "I am your friendly AI assistant, Bob!",
-                // Add more responses as needed
-            };
-            return responses[prompt.toLowerCase()] || "I'm here to chat! Ask me anything!";
+            const apiKey = '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';
+            const model = 'rwkv';
+            const prompt = `User: ${userMessage}\nBob:`;
+            const response = await axios.post(`https://api-inference.huggingface.co/models/${model}`, {
+                inputs: prompt,
+            }, {
+                headers: { 'Authorization': `Bearer ${apiKey}` }
+            });
+            return response.data[0].generated_text.split('Bob:')[1].trim();
         }
     </script>
 </body>
