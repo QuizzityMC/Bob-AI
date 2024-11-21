@@ -85,10 +85,13 @@
             sendBtn.textContent = "⏳ Thinking...";
 
             // Generate Bob's response
-            let bobResponse = await generateBobResponse(userInput.value);
-
-            // Add Bob's response to chat
-            addMessageToChat('Bob', bobResponse);
+            try {
+                let bobResponse = await generateBobResponse(userInput.value);
+                addMessageToChat('Bob', bobResponse);
+            } catch (error) {
+                addMessageToChat('Error', 'Failed to get a response from the AI.');
+                console.error('Error fetching response:', error);
+            }
 
             // Re-enable input and button
             userInput.value = '';
@@ -98,13 +101,13 @@
         }
 
         function addMessageToChat(sender, message) {
-            chatHistory.push({sender, message});
+            chatHistory.push({ sender, message });
             updateChatDisplay();
         }
 
         function updateChatDisplay() {
             const chatHistoryCtn = document.getElementById('chatHistoryCtn');
-            chatHistoryCtn.innerHTML = chatHistory.map(msg => 
+            chatHistoryCtn.innerHTML = chatHistory.map(msg =>
                 `<p><strong>${msg.sender}:</strong> ${msg.message}</p>`
             ).join('');
             chatHistoryCtn.scrollTop = chatHistoryCtn.scrollHeight;
@@ -120,12 +123,23 @@
             const apiKey = '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';
             const model = 'rwkv';
             const prompt = `User: ${userMessage}\nBob:`;
-            const response = await axios.post(`https://api-inference.huggingface.co/models/${model}`, {
-                inputs: prompt,
-            }, {
-                headers: { 'Authorization': `Bearer ${apiKey}` }
-            });
-            return response.data[0].generated_text.split('Bob:')[1].trim();
+
+            try {
+                const response = await axios.post(`https://api-inference.huggingface.co/models/${model}`, {
+                    inputs: prompt,
+                }, {
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+
+                if (response.data && response.data.generated_text) {
+                    return response.data.generated_text.split('Bob:')[1].trim();
+                } else {
+                    throw new Error('Unexpected response format from AI.');
+                }
+            } catch (error) {
+                console.error('Error generating response:', error);
+                throw error;
+            }
         }
     </script>
 </body>
