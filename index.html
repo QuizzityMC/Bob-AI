@@ -131,11 +131,12 @@
                     headers: { 'Authorization': `Bearer ${apiKey}` }
                 });
 
-                console.log('API Response:', response.data);
+                console.log('API Response:', response);
 
                 if (response.data && response.data.generated_text) {
                     return response.data.generated_text.split('Bob:')[1].trim();
                 } else {
+                    console.error('Unexpected response format:', response.data);
                     throw new Error('Unexpected response format from AI.');
                 }
             } catch (error) {
